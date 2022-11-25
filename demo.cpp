@@ -1,8 +1,13 @@
 #include <iostream>
 #include <numeric>
 #include <vector>
+#include "sub.cpp"
+/* /*#include <vector>
+#include <demo.cpp>
+// */
 #include <algorithm>
 #include <cmath>
+//include <iomanip>
 
 using namespace std;
 
