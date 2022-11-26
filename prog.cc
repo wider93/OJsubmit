@@ -88,7 +88,6 @@ int main(int argv, char* argc[]){
             if(stl.contains(s)) continue;
             prereq[s] = CppFile(s);
             auto &file = prereq[s];
-            cout << s << endl;
             for(const auto &t: file.headers){
                 left[t]++;
                 if(r.contains(t)) continue;
@@ -119,8 +118,9 @@ int main(int argv, char* argc[]){
         return ans.str();
     };
 
-    string s = "demo.cpp";
+    string s = "../demo.cpp";
     if(argv != 1) s = argc[1];
+    //cout << s << '\n';
     auto merged = makeFile(s);
     cout << merged;
 }
