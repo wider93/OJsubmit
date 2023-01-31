@@ -1,4 +1,4 @@
-// This code checks if all header is placed on the top
+// This code checks if all headers are placed on the top
 // and "using namespace std;" follows
 
 // todo
