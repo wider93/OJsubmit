@@ -15,9 +15,6 @@
 using namespace std;
 
 
-bool isBracketHeader(const string& s){
-    return s.size() > 2 and s[0] == '<' and s.back() == '>';
-};
 bool isHeader(const string& s){
     return s.size() > 2 and ((s[0] == '<' and s.back() == '>') or (s[0] == '"' and s.back() == '"'));
 };
@@ -44,10 +41,13 @@ const unordered_set<string> stl = [](const string& fileName){
     unordered_set<string> ans;
     string s;
     while(f >> s){
-        if(isBracketHeader(s)) 
+        if(isHeader(s))
             ans.insert(headerToFilename(s));
     } return ans;
-}("c++headers.txt");
+}("../c++headers.txt");
+bool isSTL(const string& s){
+    return stl.count(s);
+};
 bool usingNamespaceStd(const string &s){
     return s.find("using") != string::npos && s.find("namespace") != string::npos && s.find("std;") != string::npos;
 }
@@ -68,13 +68,13 @@ struct CppFile{
                 size_t i = 8; while(i < s.size() && s[i] == ' ') ++i;
                 auto t = s.substr(i, s.size() - i);
                 assert(isHeader(t));
-                headers.push_back(t);
-            } else if (!isBlankOrComment(s)){
+                headers.push_back(t.substr(1, t.size() - 2));
+            }else if (!(isBlankOrComment(s) || s.find("pragma once") != string::npos)){
                 contentsStream << s << '\n';
             }
         }
         while(getline(f, s)){
-            if(isBlankOrComment(s)) continue;
+            if(isBlankOrComment(s) || s.find("pragma once") != string::npos) continue;
             contentsStream << s << '\n';
         }contents = contentsStream.str();
     }
@@ -123,18 +123,17 @@ string makeFile(const string& source){
     vector<string> files; files.reserve(r.size());
     while(!q.empty()){
         const auto &t = q.front();
-        if(isBracketHeader(t)) head.push_back(t);
+        if(isSTL(t)) head.push_back(t);
         else files.push_back(prereq[t].contents);
         for(const auto &i: prereq[t].headers){
             left[i]--;
-            if(!left[i]){
+            if(!left[i])
                 q.push(i);
-            }
         }q.pop();
     }
     stringstream ans;
     for (auto &i: head)
-        ans << "#include " << i << '\n';
+        ans << "#include <" << i << ">\n";
     ans << "\nusing namespace std;\n";
     for (auto &file : std::ranges::reverse_view(files)) {
         if (file.empty()) continue;
@@ -142,7 +141,9 @@ string makeFile(const string& source){
     } return ans.str();
 };
 int main(int argv, char* argc[]){
-    string s = "demo.cpp";
+    string s = "main.cpp";
+//    for(auto &i: stl) cout << i << ' ';
+//    cout << '\mod';
     if(argv != 1) s = argc[1];
     auto merged = makeFile(s);
     cout << merged;
