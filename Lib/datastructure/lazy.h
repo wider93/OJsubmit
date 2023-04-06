@@ -6,11 +6,11 @@ template<typename T, typename S>
 constexpr bool Distributive = true;
 template <typename Val, typename Op>
 concept AppropriateLazy = requires(const Val& a, const Val& b, const Op& f, const Op& g){
-    {Val::e()} -> std::same_as<Val>;
-    {Op::e()} -> std::same_as<Op>; 
-    {a + b} -> std::same_as<Val>;
-    {g(a) } -> std::same_as<Val>;
-    {f + g} -> std::same_as<Op>;
+    {Val::e()} -> same_as<Val>;
+    {Op::e()} -> same_as<Op>;
+    {a + b} -> same_as<Val>;
+    {g(a) } -> same_as<Val>;
+    {f + g} -> same_as<Op>;
 } && Distributive<Val, Op>;
 
 template<typename Val, typename Op>

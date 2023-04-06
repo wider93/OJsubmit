@@ -1,21 +1,16 @@
 #include "iostream"
-#include "vector"
-#include "algorithm"
-#include "cassert"
-#include "cmath"
+#include "types/poly.h"
+#include "types/modulo.h"
 using namespace std;
-//template <typename T>
-//constexpr array<T, 5> d(T p){
-//    T q = T(1) - p;
-//    return {p*p*p*p, 4*p*p*p*q, 6*p*p*q*q, 4*p*q*q*q, q*q*q*q};
-//}
-//#undef NDEBUG
-constexpr int l = 11;
-auto x(auto i){
-    return i+1;
-}
+
+using Z = Z_n<998244353>;
+using poly = Poly<Z, MulType::ntt>;
 int main(){
-    cout << fixed;
-    long long s = 0;
-    cout << x(s) << ' ' << x(1.);
+    cin.tie(0) -> sync_with_stdio(0);
+    int n; cin >> n;
+    vector<int> parent(n+1);
+    for(int i = 2; i <= n; ++i) cin >> parent[i];
+    vector<Z> p(n+1);
+    for(int i = 1; i <= n; ++i) cin >> p[i];
 }
+

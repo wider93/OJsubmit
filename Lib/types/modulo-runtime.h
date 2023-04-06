@@ -1,7 +1,7 @@
 #pragma once
 #include <types/integers.h>
-#include "utils.h"
-#include <traits.h>
+#include <basic_utility.h>
+#include <bit>
 using namespace std;
 
 template <int inputLength, int modLength = inputLength>
@@ -77,6 +77,6 @@ template <int maxmod>
 using RZ_from_mod = RZ_n<bit_width((u64)maxmod)>;
 template <typename T>
 concept is_runtime_modular = requires(T a) {
-    Number<T>;
+    requires Number<T>;
     {RZ_n<T::modmax, T::index>(a)} -> same_as<T>;
 };

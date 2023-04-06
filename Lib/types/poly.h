@@ -1,9 +1,8 @@
 #pragma once
 #include <types/modulo.h>
 #include <types/modulo-runtime.h>
-#include <traits.h>
 #include <complex>
-#define fft_defined
+
 #define cpx complex<double>
 inline namespace FFT{
 
@@ -104,7 +103,7 @@ constexpr vector<T> multiply_ntt(const vector<T> &a, const vector<T>& b){
     return _a;
 }
 template <Number T>
-requires requires {is_modular<T> || is_runtime_modular<T>;}
+requires requires {requires is_modular<T> || is_runtime_modular<T>;}
 constexpr vector<T> multiply_fft_cut(const vector<T> &a, const vector<T>& b){
     int n = 1;
     while(n < a.size() + b.size()) n *= 2;
@@ -154,6 +153,9 @@ struct Poly{
     Poly() : a() {}
     Poly(T a0) : a(1, a0) { normalize(); }
     Poly(const vector<T> &v) : a(v) { normalize(); }
+
+    template<typename A>
+    Poly(A b, A e) : a(b, e){}
     Poly(vector<T> &&v) : a(move(v)) { normalize(); }
     constexpr static Poly monomial(int n, T a = 1){
         vector<T> v(n); v[n-1] = a; return v;
@@ -220,7 +222,10 @@ struct Poly{
         return mod_naive(o);
     }
     constexpr Poly& operator%= (const Poly &o){ return *this = *this % o; }
-
+    constexpr Poly  operator<< (int n) const {vector<T> v(n+size()); copy(begin(a), end(a), begin(v)+n); return v;}
+    constexpr Poly  operator>> (int n) const {return {begin(a)+min(size(), n), end(a)};}
+    constexpr Poly& operator<<=(int n) {return *this = *this << n;}
+    constexpr Poly& operator>>=(int n) {return *this = *this >> n;}
     constexpr pair<Poly, Poly> divmod_naive (const Poly &o){
         if(size() < o.size()) return {Poly(), *this};
         vector<T> res(size() - o.size() + 1);
@@ -293,11 +298,26 @@ struct Poly{
         }
         return res.trim(n);
     }
+    Poly pow(i64 n, i32 bound) const {
+        if(n == 0) return {1};
+        if(bound <= 0 || size() == 0) return {};
+        int z = 0;
+        while(z < size() && a[z] == T(0)) ++z;
+        if constexpr (is_modular<T> || is_runtime_modular<T>) {
+            assert(bound < T::getmod());
+            if(bound <= (i128)n*z) return {};
+            int k = bound - n*z, ns = n % T::getmod();
+            Poly tmp = (*this) >> z;
+            T o = tmp[0]; tmp /= o;
+            return ((tmp.log(k) * T(ns)).exp(k) << (n * z)) * o.pow(n);
+        }
+        assert(0);
+        return {};
+    }
     friend ostream& operator<<(ostream& f, const Poly &v){
         for(auto &i: v.a) f << i << ' ';
         return f;
     }
 };
-
 
 #undef cpx

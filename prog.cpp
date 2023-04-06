@@ -14,6 +14,7 @@
 
 using namespace std;
 
+constexpr char ONCE[] = "pragma once";
 
 bool isHeader(const string& s){
     return s.size() > 2 and ((s[0] == '<' and s.back() == '>') or (s[0] == '"' and s.back() == '"'));
@@ -49,7 +50,8 @@ bool isSTL(const string& s){
     return stl.count(s);
 };
 bool usingNamespaceStd(const string &s){
-    return s.find("using") != string::npos && s.find("namespace") != string::npos && s.find("std;") != string::npos;
+    auto a = s.find("using"), b = s.find("namespace"), c = s.find("std;");
+    return a < b && b < c && c < string::npos;
 }
 struct CppFile{
     static constexpr string_view prefixes[]{"./", "../", "../Lib/"};
@@ -69,12 +71,12 @@ struct CppFile{
                 auto t = s.substr(i, s.size() - i);
                 assert(isHeader(t));
                 headers.push_back(t.substr(1, t.size() - 2));
-            }else if (!(isBlankOrComment(s) || s.find("pragma once") != string::npos)){
+            }else if (!(isBlankOrComment(s) || s.find(ONCE) != string::npos)){
                 contentsStream << s << '\n';
             }
         }
         while(getline(f, s)){
-            if(isBlankOrComment(s) || s.find("pragma once") != string::npos) continue;
+            if(isBlankOrComment(s) || s.find(ONCE) != string::npos) continue;
             contentsStream << s << '\n';
         }contents = contentsStream.str();
     }
