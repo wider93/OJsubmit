@@ -2,8 +2,15 @@
 #include <iostream>
 #include <cassert>
 #include <traits.h>
+#include "vector"
 using namespace std;
-
+void fastio(){
+    cin.tie(0) ->sync_with_stdio(0);
+}
+template <typename T>
+concept Printable = requires (T a){
+    {cout << a } -> same_as<ostream&>;
+};
 template <Container T>
 void println(T a, ostream& f = cout){
     auto now = a.begin(), end = a.end();
@@ -13,7 +20,8 @@ void println(T a, ostream& f = cout){
         f << ' ' << *(now++);
     }
 }
-template <Container T>
-ostream& operator<<(ostream& f, T v){
+
+template <Printable T>
+ostream& operator<<(ostream& f, const vector<T> &v){
     println(v, f); return f;
 }

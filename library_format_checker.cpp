@@ -3,7 +3,7 @@
 #include "iostream"
 // todo
 using namespace std;
-constexpr string_view relative_path
+constexpr string_view relative_path="";
 int main(){
 
 }

@@ -5,7 +5,7 @@
 using namespace std;
 
 template <int inputLength, int modLength = inputLength>
-requires requires{ inputLength >= modLength;}
+requires requires{ inputLength >= modLength; inputLength <= 64;}
 struct Barret{
     using T = conditional_t<inputLength < 31, i32, i64>;
     using Tw = conditional_t<modLength + inputLength <= 63, i64, i128>;
@@ -33,12 +33,13 @@ struct Barret{
 template <int k, int l=2*k, int index=0> // "index" exists solely to fulfill the requirement of keeping multiple modulos.
 struct RZ_n{
     using B = Barret<l, k>;
-    using T = B::T;
+    using T = typename B::T;
     using Tw = wider_t<T>;
-    static B mod;
+    inline static B mod{3};
     T v;
     constexpr RZ_n(const T& a = 0) noexcept: v(a){}
     static i64 getmod() {return mod.mod;}
+    static void setmod(typename B::T a) {mod = B(a);}
     explicit constexpr operator bool() const{ return v != 0; }
     template<integral I>explicit constexpr operator I() const{ return v; }
     friend istream& operator >> (istream &in, RZ_n &a) { in >> a.v; a.v %= mod.mod; if(a.v < 0) a.v += mod.mod; return in;}
@@ -76,7 +77,7 @@ struct RZ_n{
 template <int maxmod>
 using RZ_from_mod = RZ_n<bit_width((u64)maxmod)>;
 template <typename T>
-concept is_runtime_modular = requires(T a) {
-    requires Number<T>;
-    {RZ_n<T::modmax, T::index>(a)} -> same_as<T>;
+concept is_runtime_modular = Number<T> && requires(T a) {
+    typename T::B;
+//    {RZ_n<T::B::k, T::index>(a)} -> same_as<T>;
 };

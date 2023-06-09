@@ -151,9 +151,9 @@ struct Decimal{
         reduce(ans);
         return ans;
     }
-    // static pair<vector<int>, vector<int>> divmod(const vector<int>& a, const vector<int>& b){// todo
-    //     assert(!b.empty());  
-    // } 
+//    static pair<vector<int>, vector<int>> divmod(const vector<int>& a, const vector<int>& b){// todo
+//        assert(!b.empty());
+//    }
 
     static Decimal addsub(const Decimal& a, const Decimal& b, bool adds = true){
         if (b.v.empty()) return a;

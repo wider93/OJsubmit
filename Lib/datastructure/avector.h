@@ -12,6 +12,8 @@ struct avector{
     constexpr avector(int n=0, T val=T{}): sz(n), v{} {
         fill(v.begin(), v.begin() + sz, val);
     }
+    template <input_iterator S>
+    constexpr avector(S s, S e): v(s, e), sz(e-s){};
     constexpr avector(initializer_list<T> l):sz(l.size()), v{} {
         move(l.begin(), l.end(), v.begin());
     }
@@ -32,8 +34,8 @@ struct avector{
     constexpr T& operator[](int i) { return v[i];}
     constexpr void push_back(const T& a){ v[sz++] = a;}
     template<typename... Args>
-    constexpr void emplace_back(Args&&... args ){
-        v[sz++] = T(forward<Args>(args)...);
+    constexpr auto& emplace_back(Args&&... args ){
+        return v[sz++] = T(forward<Args>(args)...);
     }
     constexpr weak_ordering	operator <=> (const avector& o) const {
         for(int i = 0, msz = min(sz, o.sz); i < msz; ++i) if(v[i] != o.v[i]) return v[i] <=> o.v[i];

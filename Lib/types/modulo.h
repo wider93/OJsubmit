@@ -12,7 +12,7 @@ struct Z_n{
     constexpr static T mod = pv;
 public:
     T v;
-    static i64 getmod() {return mod;}
+    constexpr static i64 getmod() {return mod;}
     constexpr Z_n(const T& a = 0) noexcept: v(a){}
     explicit constexpr operator bool() const{ return v != 0; }
     template<integral I>explicit constexpr operator I() const{ return v; }
@@ -36,7 +36,7 @@ public:
     constexpr Z_n pow(unsigned long long exp) const{ return pow(*this, exp); }
     constexpr static Z_n pow(Z_n base, unsigned long long exp){
         Z_n ans = 1;
-        while(exp){
+        while(exp ){
             if(exp & 1) ans *= base;
             base *= base;
             exp >>= 1;

@@ -1,3 +1,5 @@
+
+
 #pragma clang diagnostic push
 #pragma ide diagnostic ignored "cppcoreguidelines-interfaces-global-init"
 #include <cstdlib>
@@ -11,6 +13,7 @@
 #include <unordered_set>
 #include <queue>
 #include <algorithm>
+#include <regex>
 
 using namespace std;
 
@@ -50,13 +53,16 @@ bool isSTL(const string& s){
     return stl.count(s);
 };
 bool usingNamespaceStd(const string &s){
-    auto a = s.find("using"), b = s.find("namespace"), c = s.find("std;");
-    return a < b && b < c && c < string::npos;
+    return s.find("using") != string::npos && s.find("namespace") != string::npos && s.find("std;") != string::npos;
 }
 struct CppFile{
     static constexpr string_view prefixes[]{"./", "../", "../Lib/"};
     vector<string> headers;
     string contents;
+    static bool is_include_statement(string& s){
+        const regex re(R"([ \t]*#include[ \t]*(<[a-z][0-9a-z_./]*>|"[a-z][0-9a-z_./]*"))");
+        return regex_match(s, re);
+    }
     CppFile():headers{}, contents{}{}
     CppFile(string fileName):headers{}, contents{}{
         if(isHeader(fileName)) fileName = headerToFilename(fileName);
@@ -77,7 +83,7 @@ struct CppFile{
         }
         while(getline(f, s)){
             if(isBlankOrComment(s) || s.find(ONCE) != string::npos) continue;
-            contentsStream << changeSpacetoTab(move(s)) << '\n';
+            contentsStream << s << '\n';
         }contents = contentsStream.str();
     }
     static string firstOccurence(string& fileName){
@@ -89,16 +95,6 @@ struct CppFile{
                 return trial;
             }
         } return "";
-    }
-    static int trimSpace(string& s){
-        for(int i = 0; i < s.size(); ++i) if(s[i] != ' ') {s = s.substr(i, s.size() - i); return i;}
-        int m = s.size();
-        s = {}; return m;
-    }
-    static string changeSpacetoTab(string&& s){
-        constexpr int cliontabsize = 4;
-        int t = trimSpace(s); if(t%4){cerr << s; assert(t % 4 == 0);}
-        return string(t/4, '\t')+s;
     }
 };
 namespace std{

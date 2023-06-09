@@ -1,5 +1,7 @@
 #pragma once
 #include "types/integers.h"
+#include "vector"
+using namespace std;
 template <integral T>
 vector<T> all_divisor_naive(T a){
     vector<T> s;
