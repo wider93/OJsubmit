@@ -5,6 +5,7 @@
 #include "numeric"
 #include "cmath"
 #include "algorithm"
+#include "bitset"
 using namespace std;
 template <unsigned_integral T>
 struct OddMont{
@@ -154,6 +155,17 @@ constexpr Container factorize(T n){
     sort(begin(v), end(v));
     return v;
 }
+template <typename T=u64, typename Container = vector<pair<T, i32>>>
+constexpr Container factorize_concat(T n){
+    Container ans;
+    auto v = factorize(n); auto m = ssize(v);
+    for(int i = 0; i < m;){
+        int j = i+1;
+        for(;j < m && v[j] == v[j-1]; ++j);
+        ans.emplace_back(v[i], j-i);
+        i = j;
+    } return ans;
+};
 template <integral T>
 inline constexpr T primitive_root(T prime){
     if(prime == 2) return 1;
@@ -167,10 +179,25 @@ inline constexpr T primitive_root(T prime){
         } if(f) return a;
     } assert(false);
 }
+#define eratosthenes_macro(n) sieve[0] = sieve[1] = false; \
+    for(int i = 2; i * i <= n; ++i) if(sieve[i]) for(int j = i * i; j <= n; j += i) sieve[j] = false; \
+    return sieve;
+
 vector<char> sieve_eratosthenes(int n){
     assert(n > 0);
     vector<char> sieve(n+1, true);
-    sieve[0] = sieve[1] = false;
-    for(int i = 2; i * i <= n; ++i) if(sieve[i]) for(int j = i * i; j <= n; j += i) sieve[j] = false;
+    eratosthenes_macro(n)
+}
+template <int N>
+bitset<N> sieve_eratosthenes_bitset(){
+    bitset<N> sieve;
+    sieve.flip();
+    eratosthenes_macro(N);
+}
+auto sieve_eratosthenes_factor(int n){
+    assert(n > 0);
+    vector<int> sieve(n+1);
+    for(int i = 0; i <= n; ++i) sieve[i] = i;
+    for(int i = 2; i * i <= n; ++i) if(sieve[i] == i) for(int j = i * i; j <= n; j += i) sieve[j] = i;
     return sieve;
 }

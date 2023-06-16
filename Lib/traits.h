@@ -1,4 +1,5 @@
 #pragma once
+#include "concepts"
 using namespace std;
 
 template<typename T>
@@ -21,7 +22,7 @@ concept Container = requires(const T& a) {
     {a.end()};
 };
 
-template<typename T>
-concept Hashable = requires(T a){
-    { hash<T>{}(a) } -> convertible_to<size_t>;
-};
+//template<typename T>
+//concept Hashable = requires(T a){
+//    { hash<T>{}(a) } -> convertible_to<size_t>;
+//};

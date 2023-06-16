@@ -5,7 +5,7 @@
 #include <traits.h>
 
 using namespace std;
-template <long long pv>
+template <i64 pv>
 struct Z_n{
     using T = conditional_t<(pv > 2147483647), i64, i32>;
     using Tw = conditional_t<(pv > 46340), conditional_t<(pv > 2147483647), i128, i64>, i32>;
@@ -33,8 +33,8 @@ public:
     constexpr Z_n& operator/=(const Z_n & o){ return *this = *this * o.inv(); }
     constexpr bool operator==(const Z_n & o) const{ return v == o.v; }
     constexpr bool operator!=(const Z_n & o) const{ return v != o.v; }
-    constexpr Z_n pow(unsigned long long exp) const{ return pow(*this, exp); }
-    constexpr static Z_n pow(Z_n base, unsigned long long exp){
+    constexpr Z_n pow(u64 exp) const{ return pow(*this, exp); }
+    constexpr static Z_n pow(Z_n base, u64 exp){
         Z_n ans = 1;
         while(exp ){
             if(exp & 1) ans *= base;
@@ -48,7 +48,7 @@ public:
         return (a < 0) ? a + mod : a;
     }
 };
-
+namespace std{template<i64 p>struct hash<Z_n<p>>{u64 operator()(const Z_n<p> &a)const {return a.v;}};}
 template <typename T>
 concept is_modular = Number<T> && requires(T a) {
     {Z_n<T::mod>(a)} -> same_as<T>;

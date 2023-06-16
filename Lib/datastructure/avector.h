@@ -13,7 +13,7 @@ struct avector{
         fill(v.begin(), v.begin() + sz, val);
     }
     template <input_iterator S>
-    constexpr avector(S s, S e): v(s, e), sz(e-s){};
+    constexpr avector(S s, S e):sz(e-s), v(s, e) {};
     constexpr avector(initializer_list<T> l):sz(l.size()), v{} {
         move(l.begin(), l.end(), v.begin());
     }

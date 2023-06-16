@@ -49,9 +49,10 @@ void rref(vector<vector<T>>& mat){
 }
 template <typename T>
 vector<T> solveEquation(const vector<vector<T>>& mat, int val = 0){ 
-    // used on rref-ed n*(n+k) matrix, and should have unique solutions
-    // if val == 0, then it calculates for first variable (a.k.a n-th  col)
-    // else it calculates for (n+val) -th col
+    /** used on rref-ed n*(n+k) matrix, and should have unique solutions
+    if val == 0, then it calculates for first variable (a.k.a n-th  col)
+    else it calculates for (n+val) -th col
+    **/
     vector<T> ans(mat.size());
     val += mat.size();
     for(int i = mat.size() - 1; i >= 0; --i){

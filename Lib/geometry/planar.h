@@ -2,16 +2,8 @@
 #include <algorithm>
 #include <vector>
 #include "types/integers.h"
+#include "geometry/point.h"
 using namespace std;
-template <typename T>
-struct Point{
-    T x, y;
-    constexpr Point(T x = 0, T y = 0):x(x), y(y){}
-    constexpr Point operator+(const Point& o) const { return {x + o.x, y + o.y}; }
-    constexpr Point operator-(const Point& o) const { return {x - o.x, y - o.y}; }
-    constexpr auto operator<=>(const Point& o) const = default;
-};
-
 template <typename T>
 T ccw(const Point<T> &A, const Point<T> &B, const Point<T> &P) {
     return (A.x - P.x) * (B.y - P.y) - (A.y - P.y) * (B.x - P.x);

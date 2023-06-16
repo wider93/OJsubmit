@@ -1,6 +1,6 @@
 #pragma once
 #include <types/integers.h>
-#include <basic_utility.h>
+#include <basic/utility.h>
 #include <bit>
 using namespace std;
 
@@ -10,18 +10,18 @@ struct Barret{
     using T = conditional_t<inputLength < 31, i32, i64>;
     using Tw = conditional_t<modLength + inputLength <= 63, i64, i128>;
     T mod; Tw m;
-    constexpr explicit Barret(T n): mod(n), m(((Tw)1 << inputLength) / n){
-        assert((Tw)1 << modLength > mod);
+    constexpr Barret(T n=2): mod(n), m(((Tw)1 << inputLength) / n){
+        assert((Tw)1 << modLength > mod && mod > 0);
     }
     friend istream& operator>>(istream& f, Barret& o){ T a; f >> a; o = Barret(a); return f;}
     friend T operator/(Tw a, const Barret& d) {
-        T q = a * d.m >> inputLength;
+        Tw q = a * d.m >> inputLength;
         a -= q * d.mod;
         if(a >= d.mod) ++q;
         return q;
     }
     friend T operator%(Tw a, const Barret& d) {
-        T q = a * d.m >> inputLength;
+        Tw q = a * d.m >> inputLength;
         a -= q * d.mod;
         if(a >= d.mod) a -= d.mod;
         return a;
@@ -42,8 +42,8 @@ struct RZ_n{
     static void setmod(typename B::T a) {mod = B(a);}
     explicit constexpr operator bool() const{ return v != 0; }
     template<integral I>explicit constexpr operator I() const{ return v; }
-    friend istream& operator >> (istream &in, RZ_n &a) { in >> a.v; a.v %= mod.mod; if(a.v < 0) a.v += mod.mod; return in;}
-    friend ostream& operator << (ostream &out, const RZ_n &a) { return out << a.v; }
+    friend istream& operator>> (istream &in, RZ_n &a) { in >> a.v; a.v %= mod.mod; if(a.v < 0) a.v += mod.mod; return in;}
+    friend ostream& operator<< (ostream &out, const RZ_n &a) { return out << a.v; }
     constexpr RZ_n  operator+ (const RZ_n & o) const{ T tmp = v - mod.mod + o.v; if(tmp < 0) tmp += mod.mod; return tmp; }
     constexpr RZ_n& operator+=(const RZ_n & o){ v += o.v - mod.mod; if(v < 0) v += mod.mod; return *this; }
     constexpr RZ_n& operator++(){return *this += 1;}

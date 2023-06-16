@@ -18,7 +18,7 @@ template <Number F> requires (is_modular<F> || is_runtime_modular<F>)
 F root_of_unity(int n, bool inv){
     assert(F :: getmod() % n == 1);
     F p; if constexpr (is_modular<F>) p = prim<F>; else p = primitive_root(F::getmod());
-    return inv ? p.pow((F::getmod() - 1) / n).inv() : p.pow((F::getmod() - 1) / n);
+    return inv ? p.power((F::getmod() - 1) / n).inv() : p.power((F::getmod() - 1) / n);
 }
 template <> cpx root_of_unity<cpx>(int n, bool inv){
     return polar<double>(1, (inv?-2:2) * numbers::pi / n);
@@ -71,7 +71,7 @@ void fft(vector<F> &f, bool inv = 0) {
 }
 template<Number F>
 void constexpr hadamard(vector<F> &f, bool inv = 0) {
-    int n = ssize(f), j = 0;
+    int n = ssize(f);
     for (int i = 2; i <= n; i <<= 1) {
         for (int j = 0; j < n; j += i) {
             for (int k = 0; k < i / 2; k++) {
@@ -106,8 +106,7 @@ constexpr vector<T> multiply_ntt(const vector<T> &a, const vector<T>& b){
     FFT::fft(_a, 1);
     return _a;
 }
-template <Number T>
-requires requires {requires is_modular<T> || is_runtime_modular<T>;}
+template <Number T> requires requires {requires is_modular<T> || is_runtime_modular<T>;}
 constexpr vector<T> multiply_fft_cut(const vector<T> &a, const vector<T>& b){
     int n = 1;
     while(n < a.size() + b.size()) n *= 2;
@@ -155,11 +154,14 @@ template<Number T, MulType use_FFT = MulType::naive>
 struct Poly{
     vector<T> a;
     Poly() : a() {}
-    Poly(T a0) : a(1, a0) { normalize(); }
+    Poly(T a0) : a(1, a0)
+
+    { normalize(); }
     Poly(vector<T> &v) : a(v) { normalize(); }
 
     template<typename A>
     Poly(A b, A e) : a(b, e){}
+    Poly(initializer_list<T> x):a(begin(x), end(x)){}
     Poly(vector<T> &&v) : a(move(v)) { normalize(); }
     constexpr static Poly monomial(int n, T a = 1){
         vector<T> v(n); v[n-1] = a; return v;
@@ -173,6 +175,7 @@ struct Poly{
     const T& operator[](int idx) const { return a[idx]; }
     T& operator[](int idx){ return a[idx]; }
 
+    constexpr T leading() const { return size() ? a.back() : T(0); }
     constexpr Poly reversed() const { return {a.rbegin(), a.rend()}; }
     constexpr Poly trim(int sz) const { return {a.begin(), a.begin() + min(sz, size())}; }
     constexpr Poly inv_naive(int n) const {
@@ -324,7 +327,7 @@ struct Poly{
             int k = bound - n*z, ns = n % T::getmod();
             Poly tmp = (*this) >> z;
             T o = tmp[0]; tmp /= o;
-            return ((tmp.log(k) * T(ns)).exp(k) << (n * z)) * o.pow(n);
+            return ((tmp.log(k) * T(ns)).exp(k) << (n * z)) * o.power(n);
         } assert(0);
         return {};
     }
@@ -336,7 +339,7 @@ struct Poly{
         for(int i=0; i<size(); ++i){
             A[i] = a[i] * fac[i];
             fac[i+1] = fac[i] * (i+1);
-        } T invfac = fac[size()].inv(), cp = c.pow(size());
+        } T invfac = fac[size()].inv(), cp = c.power(size());
         for(int i=0; i<size(); ++i) {
             invfac *= size() - i;
             cp /= c;

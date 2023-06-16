@@ -1,4 +1,5 @@
 #pragma once
+#include "iostream"
 #include <vector>
 #include <iterator>
 using namespace std;
@@ -35,11 +36,11 @@ struct Counter{
         return ans;
     }
     constexpr auto operator<=> (const Counter& o) const = default;
+    friend ostream& operator<<(ostream& f, const Counter& a){
+        for(int i = maxn-1; i >= 0; --i) if(a.x[i]) f << i << ": " << (int)a.x[i] <<", ";
+        return f << '\n';
+    }
 };
-ostream& operator<<(ostream& f, const Counter& a){
-    for(int i = maxn-1; i >= 0; --i) if(a.x[i]) f << i << ": " << (int)a.x[i] <<", ";
-    return f << '\n';
-}
 vector<Counter> dp[maxn][maxn] = {};
 vector<Counter> alldp[maxn] = {};
 void init(){

@@ -20,5 +20,6 @@ struct Fraction{
     constexpr Fraction& operator-=(const Fraction& o){ return *this = *this - o; }
     constexpr Fraction& operator*=(const Fraction& o){ return *this = *this * o; }
     constexpr Fraction& operator/=(const Fraction& o){ return *this = *this / o; }
-    constexpr bool operator<(const Fraction &o) const {return m * o.n < o.m * n;}
+    constexpr auto operator<=>(const Fraction &o) const {return m * o.n <=> o.m * n;}
+    constexpr auto operator==(const Fraction &o) const {return m * o.n == o.m * n;}
 };
