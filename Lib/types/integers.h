@@ -34,7 +34,7 @@ inline constexpr auto pow(T base, long long exp, S p){
     return pow<common_type_t<T,S>>(base, exp, p);
 }
 template <signed_integral T>
-constexpr T divint(T a, T b){
+constexpr T divint(T a, T b){ // b > 0
     return (a >= T(0)) ? a/b : ~((~a)/b);
 }
 template <signed_integral T>

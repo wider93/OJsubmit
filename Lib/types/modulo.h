@@ -33,6 +33,8 @@ public:
     constexpr Z_n& operator/=(const Z_n & o){ return *this = *this * o.inv(); }
     constexpr bool operator==(const Z_n & o) const{ return v == o.v; }
     constexpr bool operator!=(const Z_n & o) const{ return v != o.v; }
+    constexpr Z_n& iaddmul(const Z_n& a, const Z_n& b) {v = (v + (long long)a.v * b.v) % mod; return *this;}
+    constexpr Z_n addmul(const Z_n& a, const Z_n& b) const {return (v + (long long)a.v * b.v) % mod;}
     constexpr Z_n pow(u64 exp) const{ return pow(*this, exp); }
     constexpr static Z_n pow(Z_n base, u64 exp){
         Z_n ans = 1;

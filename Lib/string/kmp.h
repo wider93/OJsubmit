@@ -1,3 +1,4 @@
+#pragma once
 #include "vector"
 #include "ranges"
 using namespace std;

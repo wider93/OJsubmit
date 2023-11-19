@@ -9,9 +9,9 @@ requires requires{ inputLength >= modLength; inputLength <= 64;}
 struct Barret{
     using T = conditional_t<inputLength < 31, i32, i64>;
     using Tw = conditional_t<modLength + inputLength <= 63, i64, i128>;
-    T mod; Tw m;
+    T mod, m;
     constexpr Barret(T n=2): mod(n), m(((Tw)1 << inputLength) / n){
-        assert((Tw)1 << modLength > mod && mod > 0);
+        assert((mod >> m) == 0 && mod > 0);
     }
     friend istream& operator>>(istream& f, Barret& o){ T a; f >> a; o = Barret(a); return f;}
     friend T operator/(Tw a, const Barret& d) {
@@ -26,9 +26,8 @@ struct Barret{
         if(a >= d.mod) a -= d.mod;
         return a;
     }
-
-    template<integral S>friend S& operator/=(S& a, const Barret& d) { return a = a / d; }
-    template<integral S>friend S& operator%=(S& a, const Barret& d) { return a = a % d; }
+    friend T& operator/=(T& a, const Barret& d) { return a = a / d; }
+    friend T& operator%=(T& a, const Barret& d) { return a = a % d; }
 };
 template <int k, int l=2*k, int index=0> // "index" exists solely to fulfill the requirement of keeping multiple modulos.
 struct RZ_n{

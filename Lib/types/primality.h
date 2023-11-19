@@ -169,10 +169,10 @@ constexpr Container factorize_concat(T n){
 template <integral T>
 inline constexpr T primitive_root(T prime){
     if(prime == 2) return 1;
-    auto factor = factorize(prime-1);
+    auto factor = factorize_concat(prime-1);
     for(T a = 2; a < prime; ++a){
         bool f = true;
-        for(auto &p: factor){
+        for(auto &[p, e]: factor){
             if(pow(a, (prime - 1) / p, prime) == (T)1){
                 f = false; break;
             }
@@ -189,10 +189,10 @@ vector<char> sieve_eratosthenes(int n){
     eratosthenes_macro(n)
 }
 template <int N>
-bitset<N> sieve_eratosthenes_bitset(){
-    bitset<N> sieve;
+bitset<N+1> sieve_eratosthenes_bitset(){
+    bitset<N+1> sieve;
     sieve.flip();
-    eratosthenes_macro(N);
+    eratosthenes_macro(N)
 }
 auto sieve_eratosthenes_factor(int n){
     assert(n > 0);
@@ -202,7 +202,7 @@ auto sieve_eratosthenes_factor(int n){
     return sieve;
 }
 constexpr int fs = 64 * 3 * 5 * 7 * 11;
-void apply_on_odd_primes(int n, auto& init, auto f) {
+void apply_on_odd_primes(long long n, auto& init, auto f) {
 	if(n <= fs){
 		auto sieve = sieve_eratosthenes_bitset<fs>();
 		for(int i = 3; i <= n; i += 2) if(sieve[i]) { f(init, i); }
@@ -218,22 +218,22 @@ void apply_on_odd_primes(int n, auto& init, auto f) {
 		}
 	}
 	int s = odd_primes.size();
-	while ((long long)odd_primes[s] * odd_primes[s] > n) --s;
+	while ((long long)odd_primes[s-1] * odd_primes[s-1] > n) --s;
 	vector<int> current_rem(s);
-	for(int i = 4; i < s; ++i) {
+	for(int i = 5; i < s; ++i) {
 		current_rem[i] = odd_primes[i] - 1 - sieve_cut % odd_primes[i];
 		if(current_rem[i] % 2) current_rem[i] += odd_primes[i];
 		current_rem[i] /= 2;
 	}
 	bitset<fs/2> base; {
-		for (int i: {3, 5, 7, 11})
+		for (int i: {3, 5, 7, 11, 13})
 			for (int j = i>>1; j < fs/2; j += i)
 				base[j] = true;
 	}
-	int now = sieve_cut;
+	long long now = sieve_cut;
 	for( ;now + fs < n; now += fs){
 		bitset<fs/2> small = base;
-		for(int i = 4; i < s; ++i){
+		for(int i = 5; i < s; ++i){
 			int j = current_rem[i];
 			for(; j < fs/2; j += odd_primes[i])
 				small[j] = true;
@@ -243,7 +243,7 @@ void apply_on_odd_primes(int n, auto& init, auto f) {
 			if(!small[i])
 				f(init, now + 2*i+1);
 	}{
-		for(int i = 4; i < s; ++i){
+		for(int i = 5; i < s; ++i){
 			for(int j = current_rem[i]; j < fs/2; j += odd_primes[i])
 				base[j] = true;
 		}for(int i = 1; i <= n-now; i += 2)
